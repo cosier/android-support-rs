@@ -1,0 +1,14 @@
+[root]
+name = "android_support"
+version = "0.1.0"
+dependencies = [
+ "android_ffi 0.1.0 (git+https://github.com/cosier/android-ffi-rs)",
+]
+
+[[package]]
+name = "android_ffi"
+version = "0.1.0"
+source = "git+https://github.com/cosier/android-ffi-rs#b1f76706c20190ad7149aa69d33569069504cfac"
+
+[metadata]
+"checksum android_ffi 0.1.0 (git+https://github.com/cosier/android-ffi-rs)" = "<none>"

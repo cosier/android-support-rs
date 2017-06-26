@@ -1,5 +1,5 @@
 #![cfg(target_os = "android")]
-
+extern crate android_ffi;
 // extern {
     // fn cargo_apk_injected_glue_get_native_window() -> *const c_void;
     // fn cargo_apk_injected_glue_add_sender(sender: *mut ());
@@ -15,8 +15,6 @@
 use std::mem;
 use std::os::raw::c_void;
 use std::sync::mpsc::Sender;
-
-use android_ffi::*;
 
 /// An event triggered by the Android environment.
 #[derive(Clone, Copy, Debug)]
@@ -76,7 +74,7 @@ pub trait SyncEventHandler {
 pub fn add_sender(sender: Sender<Event>) {
     unsafe {
         let sender = Box::into_raw(Box::new(sender)) as *mut _;
-        cargo_apk_injected_glue_add_sender(sender);
+        android_ffi::cargo_apk_injected_glue_add_sender(sender);
     }
 }
 
@@ -85,7 +83,7 @@ pub fn add_sender(sender: Sender<Event>) {
 pub fn add_sync_event_handler(handler: Box<SyncEventHandler>) {
     unsafe {
         let handler = Box::into_raw(Box::new(handler)) as *mut _;
-        cargo_apk_injected_glue_add_sync_event_handler(handler);
+        android_ffi::cargo_apk_injected_glue_add_sync_event_handler(handler);
     }
 }
 
@@ -94,14 +92,14 @@ pub fn add_sync_event_handler(handler: Box<SyncEventHandler>) {
 pub fn remove_sync_event_handler(handler: *const SyncEventHandler) {
     unsafe {
         let handler = Box::into_raw(Box::new(handler)) as *mut _;
-        cargo_apk_injected_glue_remove_sync_event_handler(handler);
+        android_ffi::cargo_apk_injected_glue_remove_sync_event_handler(handler);
     }
 }
 
 #[inline]
 pub fn set_multitouch(multitouch: bool) {
     unsafe {
-        cargo_apk_injected_glue_set_multitouch(multitouch);
+        android_ffi::cargo_apk_injected_glue_set_multitouch(multitouch);
     }
 }
 
@@ -115,14 +113,14 @@ pub fn set_multitouch(multitouch: bool) {
 pub fn add_sender_missing(sender: Sender<Event>) {
     unsafe {
         let sender = Box::into_raw(Box::new(sender)) as *mut _;
-        cargo_apk_injected_glue_add_sender_missing(sender);
+        android_ffi::cargo_apk_injected_glue_add_sender_missing(sender);
     }
 }
 
 /// Returns a handle to the native window.
 #[inline]
 pub unsafe fn get_native_window() -> *const c_void {
-    cargo_apk_injected_glue_get_native_window()
+    android_ffi::cargo_apk_injected_glue_get_native_window()
 }
 
 ///
@@ -130,7 +128,7 @@ pub unsafe fn get_native_window() -> *const c_void {
 pub fn write_log(message: &str) {
     unsafe {
         let (message_ptr, message_len) = mem::transmute(message);
-        cargo_apk_injected_glue_write_log(message_ptr, message_len);
+        android_ffi::cargo_apk_injected_glue_write_log(message_ptr, message_len);
     }
 }
 
@@ -138,7 +136,7 @@ pub fn write_log(message: &str) {
 pub fn load_asset(filename: &str) -> Result<Vec<u8>, AssetError> {
     unsafe {
         let (filename_ptr, filename_len) = mem::transmute(filename);
-        let data = cargo_apk_injected_glue_load_asset(filename_ptr, filename_len);
+        let data = android_ffi::cargo_apk_injected_glue_load_asset(filename_ptr, filename_len);
         let data: Box<Result<Vec<u8>, AssetError>> = Box::from_raw(data as *mut _);
         *data
     }
@@ -149,6 +147,6 @@ pub fn load_asset(filename: &str) -> Result<Vec<u8>, AssetError> {
 #[inline]
 pub fn wake_event_loop() {
     unsafe {
-        cargo_apk_injected_glue_wake_event_loop();
+        android_ffi::cargo_apk_injected_glue_wake_event_loop();
     }
 }
